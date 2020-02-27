@@ -1,17 +1,21 @@
 package com.lamorado.myrecyclerview
 
-import android.icu.text.CaseMap
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.lamorado.myrecyclerview.NextActivity.Companion.DETAIL
+import com.lamorado.myrecyclerview.NextActivity.Companion.NAME
+import kotlinx.android.synthetic.main.item_row_hero.*
 
-class MainActivity : AppCompatActivity() {
-    private lateinit var rvHeroes: RecyclerView
+open class MainActivity : AppCompatActivity() {
+    lateinit var rvHeroes: RecyclerView
     private var list: ArrayList<Hero> = arrayListOf()
 
     private var title: String = "Mode List"
@@ -32,6 +36,12 @@ class MainActivity : AppCompatActivity() {
         rvHeroes.layoutManager = LinearLayoutManager(this)
         val listHeroAdapter = ListHeroAdapter(list)
         rvHeroes.adapter = listHeroAdapter
+
+        listHeroAdapter.setOnItemClickCallback (object : ListHeroAdapter.OnItemClickCallback{
+            override fun onItemClicked (data: Hero) {
+                showSelectedHero(data)
+            }
+        })
     }
 
     private fun showRecyclerGrid() {
@@ -58,8 +68,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.getItemId()
+
+        if (id == R.id.menu_profile) {
+            val menuAbout = Intent(this@MainActivity, AboutActivity::class.java)
+            startActivity(menuAbout)
+        }
+
         setMode(item.itemId)
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showSelectedHero(hero: Hero) {
+        val intent = Intent(this@MainActivity, NextActivity::class.java)
+        intent.putExtra(NAME, tv_item_name.text.toString())
+        intent.putExtra(DETAIL, hero.detail)
+        startActivity(intent)
     }
 
     private fun setMode(selectedMode: Int) {
@@ -79,7 +103,6 @@ class MainActivity : AppCompatActivity() {
         }
         setActionBarTitle(title)
     }
-
 
 
 }
